@@ -1,0 +1,75 @@
+name: 'Sintesi - Documentation Check'
+description: 'Checks for documentation drift and auto-creates a PR with AI-generated fixes.'
+author: 'doctypedev'
+branding:
+  icon: 'book'
+  color: 'white'
+
+inputs:
+  openai_api_key:
+    description: 'Your OpenAI API Key'
+    required: true
+  github_token:
+    description: 'GitHub Token to create Pull Requests (standard GITHUB_TOKEN works)'
+    required: true
+  version:
+    description: 'Version of Sintesi to use'
+    required: false
+    default: 'latest'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Sintesi
+      shell: bash
+      run: |
+        echo "📦 Installing Sintesi (@sintesi/sintesi)..."
+        npm install -g @sintesi/sintesi@${{ inputs.version }}
+
+    - name: Run Sintesi Check & Auto-Fix
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        echo "🔍 Running Sintesi Smart Check..."
+        
+        if sintesi check --smart --verbose; then
+          echo "✅ No documentation drift detected."
+          exit 0
+        fi
+
+        echo "⚠️ Drift detected! Starting auto-fix procedure..."
+
+        git config --global user.name "Sintesi Bot"
+        git config --global user.email "bot@sintesi.ai"
+
+        BRANCH_NAME="sintesi/fix-docs-${{ github.run_id }}"
+        git checkout -b "$BRANCH_NAME"
+
+        echo "🧠 Generating updated documentation..."
+        sintesi readme --output README.md --verbose --force
+
+        if [ -z "$(git status --porcelain)" ]; then 
+          echo "Strange: Drift detected but no file changes after fix."
+          exit 0
+        fi
+
+        git add .
+        git commit -m "docs: auto-update documentation via Sintesi"
+        git push origin "$BRANCH_NAME"
+
+        echo "🚀 Creating Pull Request..."
+        gh pr create \
+          --title "🤖 Sintesi: Documentation Auto-Fix" \
+          --body "Sintesi detected a drift between your code and documentation. This PR aligns the docs using GenAI." \
+          --base "main" \
+          --head "$BRANCH_NAME" \
+          --label "documentation,automated"
+
+        echo "✅ Pull Request created successfully."
