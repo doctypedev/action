@@ -49,15 +49,16 @@ runs:
         OPENAI_API_KEY: ${{ inputs.openai_api_key }}
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
+        echo "🔍 Configuring Sintesi..."
         git config --global user.name "Sintesi Bot"
         git config --global user.email "bot@sintesi.ai"
-
-        echo "🔍 Running Sintesi Smart Check..."
-        sintesi check --no-strict --verbose
 
         TARGETS="${{ inputs.targets }}"
 
         if [[ "$TARGETS" == *"readme"* ]]; then
+          echo "🔍 Running Sintesi Check (README)..."
+          sintesi check --readme --no-strict --verbose
+
           echo "📝 Processing README..."
           sintesi readme --output ${{ inputs.readme_output }} --verbose
         else
@@ -65,6 +66,9 @@ runs:
         fi
         
         if [[ "$TARGETS" == *"docs"* ]]; then
+          echo "🔍 Running Sintesi Check (Documentation)..."
+          sintesi check --doc --no-strict --verbose
+
           echo "📚 Processing Documentation Site..."
           sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
         else
