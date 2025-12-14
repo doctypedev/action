@@ -22,7 +22,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  guard:
+  sync-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
