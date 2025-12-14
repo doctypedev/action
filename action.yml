@@ -55,10 +55,19 @@ runs:
 
         TARGETS="${{ inputs.targets }}"
 
+        # 1. Checks Phase
         if [[ "$TARGETS" == *"readme"* ]]; then
           echo "🔍 Running Sintesi Check (README)..."
           sintesi check --readme --no-strict --verbose
+        fi
 
+        if [[ "$TARGETS" == *"docs"* ]]; then
+          echo "🔍 Running Sintesi Check (Documentation)..."
+          sintesi check --doc --no-strict --verbose
+        fi
+
+        # 2. Generation Phase
+        if [[ "$TARGETS" == *"readme"* ]]; then
           echo "📝 Processing README..."
           sintesi readme --output ${{ inputs.readme_output }} --verbose
         else
@@ -66,9 +75,6 @@ runs:
         fi
         
         if [[ "$TARGETS" == *"docs"* ]]; then
-          echo "🔍 Running Sintesi Check (Documentation)..."
-          sintesi check --doc --no-strict --verbose
-
           echo "📚 Processing Documentation Site..."
           sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
         else
