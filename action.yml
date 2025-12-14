@@ -51,7 +51,7 @@ runs:
       run: |
         echo "🔍 Configuring Sintesi..."
         git config --global user.name "Sintesi Bot"
-        git config --global user.email "bot@sintesi.ai"
+        git config --global user.email "bot@sintesicli.dev"
 
         TARGETS="${{ inputs.targets }}"
 
