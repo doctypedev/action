@@ -93,7 +93,7 @@ runs:
 
         git add .
         git commit -m "docs: auto-update documentation via Sintesi [skip ci]"
-        git push origin "$BRANCH_NAME"
+        git push origin "$BRANCH_NAME" --force
 
         echo "🚀 Creating Pull Request..."
         gh pr create \
