@@ -98,7 +98,6 @@ runs:
         echo "🚀 Creating Pull Request..."
         gh pr create \
           --title "🤖 Sintesi: Automated Documentation Update" \
-          --commit-message: "🤖 Sintesi: Update documentation and README [skip ci]" \
           --body "Sintesi detected a drift between your code and documentation. This PR aligns the README and Public Guides using GenAI." \
           --base "main" \
           --head "$BRANCH_NAME"
