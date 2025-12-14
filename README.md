@@ -8,7 +8,7 @@ Sintesi analyzes your code and verifies that the documentation (Markdown) is up-
 Add a new workflow in `.github/workflows/docs.yml`:
 
 ```yaml
-name: Sintesi Guard
+name: Sintesi - Documentation AI
 on:
   push:
     branches: [ main ]
