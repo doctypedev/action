@@ -94,7 +94,6 @@ runs:
           --title "🤖 Sintesi: Automated Documentation Update" \
           --body "Sintesi detected a drift between your code and documentation. This PR aligns the README and Public Guides using GenAI." \
           --base "main" \
-          --head "$BRANCH_NAME" \
-          --label "documentation,automated"
+          --head "$BRANCH_NAME"
 
         echo "✅ Pull Request created successfully."
