@@ -58,12 +58,12 @@ runs:
         # 1. Checks Phase
         if [[ "$TARGETS" == *"readme"* ]]; then
           echo "🔍 Running Sintesi Check (README)..."
-          sintesi check --readme --no-strict --verbose
+          sintesi check --readme --output ${{ inputs.readme_output }} --no-strict --verbose
         fi
 
         if [[ "$TARGETS" == *"docs"* ]]; then
           echo "🔍 Running Sintesi Check (Documentation)..."
-          sintesi check --doc --no-strict --verbose
+          sintesi check --doc --output-dir ${{ inputs.docs_output }} --no-strict --verbose
         fi
 
         # 2. Generation Phase
