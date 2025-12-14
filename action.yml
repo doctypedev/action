@@ -1,5 +1,5 @@
-name: 'Sintesi - Documentation Check'
-description: 'Checks for documentation drift and auto-creates a PR with AI-generated fixes.'
+name: 'Sintesi - Documentation AI'
+description: 'Automated documentation system. Detects drift and auto-creates PRs with AI-generated fixes for README and Guides.'
 author: 'doctypedev'
 branding:
   icon: 'book'
@@ -16,6 +16,14 @@ inputs:
     description: 'Version of Sintesi to use'
     required: false
     default: 'latest'
+  readme_output:
+    description: 'Path for the output README file'
+    required: false
+    default: 'README.md'
+  docs_output:
+    description: 'Directory for the output documentation'
+    required: false
+    default: 'docs'
 
 runs:
   using: "composite"
@@ -28,46 +36,45 @@ runs:
     - name: Install Sintesi
       shell: bash
       run: |
-        echo "📦 Installing Sintesi (@sintesi/sintesi)..."
+        echo "📦 Installing Sintesi..."
         npm install -g @sintesi/sintesi@${{ inputs.version }}
 
-    - name: Run Sintesi Check & Auto-Fix
+    - name: Run Sintesi Logic
       shell: bash
       env:
         OPENAI_API_KEY: ${{ inputs.openai_api_key }}
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
-        echo "🔍 Running Sintesi Smart Check..."
-        
-        if sintesi check --smart --verbose; then
-          echo "✅ No documentation drift detected."
-          exit 0
-        fi
-
-        echo "⚠️ Drift detected! Starting auto-fix procedure..."
-
         git config --global user.name "Sintesi Bot"
         git config --global user.email "bot@sintesi.ai"
 
-        BRANCH_NAME="sintesi/fix-docs-${{ github.run_id }}"
-        git checkout -b "$BRANCH_NAME"
+        echo "🔍 Running Sintesi Smart Check..."
+        sintesi check --no-strict --verbose
 
-        echo "🧠 Generating updated documentation..."
-        sintesi readme --output README.md --verbose --force
+        echo "📝 Processing README..."
+        sintesi readme --output ${{ inputs.readme_output }} --verbose
+        
+        echo "📚 Processing Documentation Site..."
+        sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
 
         if [ -z "$(git status --porcelain)" ]; then 
-          echo "Strange: Drift detected but no file changes after fix."
+          echo "✅ No documentation changes required."
           exit 0
         fi
 
+        echo "⚠️ Drift or Updates detected! Creating Pull Request..."
+
+        BRANCH_NAME="sintesi/docs-update-${{ github.run_id }}"
+        git checkout -b "$BRANCH_NAME"
+
         git add .
-        git commit -m "docs: auto-update documentation via Sintesi"
+        git commit -m "docs: auto-update documentation via Sintesi [skip ci]"
         git push origin "$BRANCH_NAME"
 
         echo "🚀 Creating Pull Request..."
         gh pr create \
-          --title "🤖 Sintesi: Documentation Auto-Fix" \
-          --body "Sintesi detected a drift between your code and documentation. This PR aligns the docs using GenAI." \
+          --title "🤖 Sintesi: Automated Documentation Update" \
+          --body "Sintesi detected a drift between your code and documentation. This PR aligns the README and Public Guides using GenAI." \
           --base "main" \
           --head "$BRANCH_NAME" \
           --label "documentation,automated"

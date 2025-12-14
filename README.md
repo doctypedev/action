@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Sintesi Check & Fix
-        uses: doctypedev/sintesi@v1
+        uses: doctypedev/sintesi@v0.2
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,6 +44,8 @@ jobs:
 | `openai_api_key` | Your OpenAI API Key. Necessary to allow the agent to generate corrections. | ✅ | - |
 | `github_token` | The token to interact with the repository. Usually `${{ secrets.GITHUB_TOKEN }}` is sufficient. | ✅ | - |
 | `version` | The version of the Sintesi CLI to install (e.g., `latest`, `0.1.0`). | ❌ | `latest` |
+| `readme_output` | Path for the output README file. | ❌ | `README.md` |
+| `docs_output` | Directory for the output documentation. | ❌ | `docs` |
 
 ## 🛡️ Required Permissions
 
