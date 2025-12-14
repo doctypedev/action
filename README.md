@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Sintesi Check & Fix
-        uses: doctypedev/sintesi@v0
+        uses: doctypedev/action@v0
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
