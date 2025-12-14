@@ -24,6 +24,10 @@ inputs:
     description: 'Directory for the output documentation'
     required: false
     default: 'docs'
+  targets:
+    description: 'Documentation targets to generate (comma-separated). Options: readme, docs'
+    required: false
+    default: 'readme,docs'
 
 runs:
   using: "composite"
@@ -51,11 +55,21 @@ runs:
         echo "🔍 Running Sintesi Smart Check..."
         sintesi check --no-strict --verbose
 
-        echo "📝 Processing README..."
-        sintesi readme --output ${{ inputs.readme_output }} --verbose
+        TARGETS="${{ inputs.targets }}"
+
+        if [[ "$TARGETS" == *"readme"* ]]; then
+          echo "📝 Processing README..."
+          sintesi readme --output ${{ inputs.readme_output }} --verbose
+        else
+          echo "⏭️ Skipping README generation..."
+        fi
         
-        echo "📚 Processing Documentation Site..."
-        sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
+        if [[ "$TARGETS" == *"docs"* ]]; then
+          echo "📚 Processing Documentation Site..."
+          sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
+        else
+          echo "⏭️ Skipping Documentation generation..."
+        fi
 
         if [ -z "$(git status --porcelain)" ]; then 
           echo "✅ No documentation changes required."
