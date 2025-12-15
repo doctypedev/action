@@ -86,7 +86,58 @@ runs:
           exit 0
         fi
 
-        echo "⚠️ Drift or Updates detected! Creating Pull Request..."
+        # 3. Formatting Phase
+        if [ -f "package.json" ]; then
+          echo "🎨 Checking for formatting tools..."
+          
+          PKG_MANAGER="npm"
+          INSTALL_CMD="npm ci --silent"
+          RUN_CMD="npm run"
+          EXEC_CMD="npx"
+
+          if [ -f "pnpm-lock.yaml" ]; then
+            PKG_MANAGER="pnpm"
+            INSTALL_CMD="pnpm install --frozen-lockfile --silent"
+            RUN_CMD="pnpm run"
+            EXEC_CMD="pnpm exec"
+          elif [ -f "yarn.lock" ]; then
+            PKG_MANAGER="yarn"
+            INSTALL_CMD="yarn install --frozen-lockfile --silent"
+            RUN_CMD="yarn run"
+            EXEC_CMD="yarn run" # yarn run <bin> funziona come npx
+          fi
+
+          echo "📦 Installing dependencies using $PKG_MANAGER..."
+          $INSTALL_CMD || true 
+
+          # Prettier
+          if grep -q '"prettier"' package.json; then
+            echo "✨ Prettier found. Formatting..."
+            if grep -q '"format"' package.json; then
+              $RUN_CMD format || true
+            else
+              $EXEC_CMD prettier --write "${{ inputs.docs_output }}" "${{ inputs.readme_output }}" || true
+            fi
+          fi
+
+          # ESLint
+          if grep -q '"eslint"' package.json; then
+             echo "🛡️ ESLint found. Fixing..."
+             if grep -q '"lint:fix"' package.json; then
+                $RUN_CMD lint:fix || true
+             else
+                # Fallback generico
+                $EXEC_CMD eslint --fix "${{ inputs.docs_output }}" || true
+             fi
+          fi
+        fi
+        
+        if [ -z "$(git status --porcelain)" ]; then 
+          echo "✅ No documentation or formatting changes required."
+          exit 0
+        fi
+
+        echo "⚠️ Drift, Updates or Formatting changes detected! Creating Pull Request..."
 
         BRANCH_NAME="sintesi/docs-update-${{ github.run_id }}"
         git checkout -b "$BRANCH_NAME"
@@ -98,7 +149,7 @@ runs:
         echo "🚀 Creating Pull Request..."
         gh pr create \
           --title "🤖 Sintesi: Automated Documentation Update" \
-          --body "Sintesi detected a drift between your code and documentation. This PR aligns the README and Public Guides using GenAI." \
+          --body "Sintesi detected a drift between your code and documentation. This PR aligns the drift detected using GenAI." \
           --base "main" \
           --head "$BRANCH_NAME"
 
