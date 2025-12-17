@@ -12,6 +12,9 @@ inputs:
   github_token:
     description: 'GitHub Token to create Pull Requests (standard GITHUB_TOKEN works)'
     required: true
+  cohere_api_key:
+    description: 'Your Cohere API Key'
+    required: false
   version:
     description: 'Version of Sintesi to use'
     required: false
@@ -48,6 +51,7 @@ runs:
       env:
         OPENAI_API_KEY: ${{ inputs.openai_api_key }}
         GH_TOKEN: ${{ inputs.github_token }}
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
       run: |
         echo "🔍 Configuring Sintesi..."
         git config --global user.name "Sintesi Bot"

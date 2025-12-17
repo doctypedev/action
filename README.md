@@ -34,6 +34,7 @@ jobs:
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          cohere_api_key: ${{ secrets.COHERE_API_KEY }}
           targets: 'readme,docs' # Documentation targets to generate (comma-separated). Options: readme, docs
           docs_output: 'docs' # Optional: Directory for the output documentation - Default: docs
           readme_output: 'README.md' # Optional: Path for the output README file - Default: README.md
@@ -41,14 +42,15 @@ jobs:
 
 ## ⚙️ Inputs
 
-| Input | Description | Required | Default |
-| :--- | :--- | :--- | :--- |
-| `openai_api_key` | Your OpenAI API Key. Necessary to allow the agent to generate corrections. | ✅ | - |
-| `github_token` | The token to interact with the repository. Usually `${{ secrets.GITHUB_TOKEN }}` is sufficient. | ✅ | - |
-| `version` | The version of the Sintesi CLI to install (e.g., `latest`, `0.1.0`). | ❌ | `latest` |
-| `readme_output` | Path for the output README file. | ❌ | `README.md` |
-| `docs_output` | Directory for the output documentation. | ❌ | `docs` |
-| `targets` | Documentation targets to generate (comma-separated). Options: readme, docs. | ❌ | `readme,docs` |
+| Input            | Description                                                                                     | Required | Default |
+|:-----------------|:------------------------------------------------------------------------------------------------| :--- | :--- |
+| `openai_api_key` | Your OpenAI API Key. Necessary to allow the agent to generate corrections.                      | ✅ | - |
+| `github_token`   | The token to interact with the repository. Usually `${{ secrets.GITHUB_TOKEN }}` is sufficient. | ✅ | - |
+| `cohere_api_key` | Your Cohere API Key. Improves content generation.                                               | ❌ | - |
+| `version`        | The version of the Sintesi CLI to install (e.g., `latest`, `0.1.0`).                            | ❌ | `latest` |
+| `readme_output`  | Path for the output README file.                                                                | ❌ | `README.md` |
+| `docs_output`    | Directory for the output documentation.                                                         | ❌ | `docs` |
+| `targets`        | Documentation targets to generate (comma-separated). Options: readme, docs.                     | ❌ | `readme,docs` |
 
 ## 🛡️ Required Permissions
 
