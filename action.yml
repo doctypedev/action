@@ -70,25 +70,25 @@ runs:
         # 1. Checks Phase
         if [[ "$TARGETS" == *"readme"* ]]; then
           echo "🔍 Running Sintesi Check (README)..."
-          sintesi check --readme --output ${{ inputs.readme_output }} --no-strict --verbose
+          sintesi check --readme --output ${{ inputs.readme_output }} --no-strict
         fi
 
         if [[ "$TARGETS" == *"docs"* ]]; then
           echo "🔍 Running Sintesi Check (Documentation)..."
-          sintesi check --doc --output-dir ${{ inputs.docs_output }} --no-strict --verbose
+          sintesi check --doc --output-dir ${{ inputs.docs_output }} --no-strict
         fi
 
         # 2. Generation Phase
         if [[ "$TARGETS" == *"readme"* ]]; then
           echo "📝 Processing README..."
-          sintesi readme --output ${{ inputs.readme_output }} --verbose
+          sintesi readme --output ${{ inputs.readme_output }}
         else
           echo "⏭️ Skipping README generation..."
         fi
         
         if [[ "$TARGETS" == *"docs"* ]]; then
           echo "📚 Processing Documentation Site..."
-          sintesi documentation --output-dir ${{ inputs.docs_output }} --verbose
+          sintesi documentation --output-dir ${{ inputs.docs_output }}
         else
           echo "⏭️ Skipping Documentation generation..."
         fi
