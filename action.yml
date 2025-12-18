@@ -46,6 +46,14 @@ runs:
         echo "📦 Installing Sintesi..."
         npm install -g @sintesi/sintesi@${{ inputs.version }}
 
+    - name: Cache Sintesi RAG State
+      uses: actions/cache@v4
+      with:
+        path: .sintesi
+        key: sintesi-rag-${{ runner.os }}-${{ github.sha }}
+        restore-keys: |
+          sintesi-rag-${{ runner.os }}-
+
     - name: Run Sintesi Logic
       shell: bash
       env:
@@ -93,7 +101,7 @@ runs:
         # 3. Formatting Phase
         if [ -f "package.json" ]; then
           echo "🎨 Checking for formatting tools..."
-          
+        
           PKG_MANAGER="npm"
           INSTALL_CMD="npm ci --silent"
           RUN_CMD="npm run"
