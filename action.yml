@@ -49,10 +49,13 @@ runs:
     - name: Cache Sintesi RAG State
       uses: actions/cache@v4
       with:
-        path: .sintesi
-        key: sintesi-rag-${{ runner.os }}-${{ github.sha }}
+        path: |
+          .sintesi
+          !.sintesi/lineage.json
+          !.sintesi/*.state.json
+        key: sintesi-state-${{ runner.os }}-${{ github.sha }}
         restore-keys: |
-          sintesi-rag-${{ runner.os }}-
+          sintesi-state-${{ runner.os }}-
 
     - name: Run Sintesi Logic
       shell: bash
@@ -151,11 +154,11 @@ runs:
 
         echo "⚠️ Drift, Updates or Formatting changes detected! Creating Pull Request..."
 
-        BRANCH_NAME="sintesi/docs-update-${{ github.run_id }}"
+        BRANCH_NAME="sintesi/docs-update"
         git checkout -b "$BRANCH_NAME"
 
         git add .
-        git commit -m "docs: auto-update documentation via Sintesi [skip ci]"
+        git commit -m "🤖 Sintesi: Update documentation and README [skip ci]"
         git push origin "$BRANCH_NAME" --force
 
         echo "🚀 Creating Pull Request..."
